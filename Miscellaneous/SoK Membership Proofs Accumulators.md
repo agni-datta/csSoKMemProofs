@@ -1,9 +1,9 @@
 ---
 title: "IACR SoK Paper Outline: Membership Proofs and Accumulators"
-aliases: ["IACR SoK Paper Outline: Membership Proofs and Accumulators"]
 linter-yaml-title-alias: "IACR SoK Paper Outline: Membership Proofs and Accumulators"
 date created: Tuesday, June 25th 2024, 21:40:55
-date modified: Wednesday, June 26th 2024, 18:10:30
+date modified: Wednesday, June 26th 2024, 18:20:10
+aliases: ["IACR SoK Paper Outline: Membership Proofs and Accumulators"]
 ---
 
 # IACR SoK Paper Outline: Membership Proofs and Accumulators
@@ -16,9 +16,9 @@ date modified: Wednesday, June 26th 2024, 18:10:30
 - Historical context and evolution of these primitives  
 	  - From Merkle trees (1979) to modern cryptographic accumulators
 - Importance in modern cryptography:  
-	  - Role in privacy-preserving protocols  
-			- Zero-knowledge set membership proofs  
-			- Anonymous credentials systems
+	- Role in privacy-preserving protocols  
+		- Zero-knowledge set membership proofs  
+		- Anonymous credentials systems
   - Applications in blockchain and distributed systems
 	  - Scalable verification of blockchain state
 	  - Light client protocols
