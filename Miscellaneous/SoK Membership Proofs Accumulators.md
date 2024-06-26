@@ -2,7 +2,7 @@
 title: "IACR SoK Paper Outline: Membership Proofs and Accumulators"
 linter-yaml-title-alias: "IACR SoK Paper Outline: Membership Proofs and Accumulators"
 date created: Tuesday, June 25th 2024, 21:40:55
-date modified: Wednesday, June 26th 2024, 18:20:10
+date modified: Wednesday, June 26th 2024, 18:46:56
 aliases: ["IACR SoK Paper Outline: Membership Proofs and Accumulators"]
 ---
 
@@ -82,8 +82,8 @@ aliases: ["IACR SoK Paper Outline: Membership Proofs and Accumulators"]
 ### 3.1 Classification and Properties
 
 - Short proofs vs. succinct proofs
-  - Short: $|\pi| = O(\log |S|)$ or $O(\lambda)$
-  - Succinct: $|\pi| = o(|x| + |w|)$, where $|x|$ is input size, $|w|$ is witness size
+  - Short: $|\pi| = \mathcal{O}(\log |S|)$ or $\mathcal{O}(\lambda)$
+  - Succinct: $|\pi| = \mathcal{O}(|x| + |w|)$, where $|x|$ is input size, $|w|$ is witness size
 - Interactive vs. non-interactive proofs
   - Interactive: Multi-round protocols (e.g., $\Sigma$-protocols)
   - Non-interactive: Fiat-Shamir transformed or using a common reference string
@@ -102,10 +102,10 @@ aliases: ["IACR SoK Paper Outline: Membership Proofs and Accumulators"]
 	  - Computational soundness: $\Pr[\text{Verify}(x,\pi)=1 \land \neg \exists w: R(x,w)] \leq \text{negl}(\lambda)$
 	  - Knowledge soundness: $\exists E$ s.t. $\Pr[E^P(x) = w: R(x,w)] \geq \epsilon - \text{negl}(\lambda)$
   - Succinct Non-interactive Arguments of Knowledge (SNARKs)
-	  - $|\pi| = O(1)$, Verification time = $O(|x| \cdot \text{polylog}(|x|))$
+	  - $|\pi| = \mathcal{O}(1)$, Verification time = $\mathcal{O}(|x| \cdot \text{polylog}(|x|))$
 	  - Knowledge soundness with polylogarithmic knowledge error
   - Scalable Transparent Arguments of Knowledge (STARKs)
-	  - $|\pi| = \text{polylog}(|C|)$, Verification time = $O(\log(|C|))$
+	  - $|\pi| = \text{polylog}(|C|)$, Verification time = $\mathcal{O}(\log(|C|))$
 	  - Post-quantum secure, transparent setup
 
 ### 3.2 Constructions and Techniques
@@ -180,8 +180,8 @@ aliases: ["IACR SoK Paper Outline: Membership Proofs and Accumulators"]
   - $\text{UpdateWitness}(w_x, a, a', x)$ for dynamic accumulators
 - Proof size and efficiency metrics
   - Proof size: $|\pi|$
-  - Verification time: $O(\text{polylog}(|S|))$
-  - Update time: $O(\text{polylog}(|S|))$
+  - Verification time: $\mathcal{O}(\text{polylog}(|S|))$
+  - Update time: $\mathcal{O}(\text{polylog}(|S|))$
 
 ### 4.2 Constructions and Techniques
 
@@ -205,10 +205,10 @@ aliases: ["IACR SoK Paper Outline: Membership Proofs and Accumulators"]
   - Reveal hard: $\text{HOpen}(m, d)$ and soft: $\text{SOpen}(m, d)$
 - Authenticated data structures:
   - Merkle trees and variants
-	  - Proof size: $O(\log n)$
+	  - Proof size: $\mathcal{O}(\log n)$
 	  - Variants: Merkle Mountain Ranges, Merkle Patricia Tries
   - Authenticated skip lists
-	  - Expected $O(\log n)$ proof size and verification time
+	  - Expected $\mathcal{O}(\log n)$ proof size and verification time
 	  - Tower construction with geometric distribution
 - Recent advancements:
   - Batching techniques for efficient updates
@@ -238,7 +238,7 @@ aliases: ["IACR SoK Paper Outline: Membership Proofs and Accumulators"]
 - Theoretical comparison:
   - Asymptotic complexity analysis
 	  - Proof size, verification time, update time
-	  - Prover computation time: $O(|C| \cdot \text{polylog}(|C|))$ for STARKs
+	  - Prover computation time: $\mathcal{O}(|C| \cdot \text{polylog}(|C|))$ for STARKs
   - Security reductions and tightness
 	  - Concrete security bounds: $\epsilon' \leq q_H^2 / 2^\lambda + \epsilon$ for Fiat-Shamir
 	  - Reduction losses and their implications
