@@ -1,0 +1,437 @@
+\documentclass{iacrtrans}
+\usepackage[onehalfspacing]{setspace}
+\usepackage[british]{babel}
+\usepackage{graphicx}
+\usepackage[2.0, compress]{bxpdfver}
+\usepackage[x11names]{xcolor}
+\usepackage[%
+    skipabove=10pt,     % Set the vertical skip distance above the framed environment to 10pt
+    skipbelow=10pt,     % Set the vertical skip distance below the framed environment to 10pt
+    framemethod=Tikz    % Use TikZ for drawing frames
+]{mdframed}             % Use mdframed package for creating framed environments, customizable with various options such as skip distances and frame styles
+
+\usepackage{enumitem}
+\setlist{noitemsep}
+
+\begin{document}
+
+\title[SoK Commitments and Membership Proofs]{\bf SoK: A Systematic Overview of Membership Proofs and Cryptographic Accumulators}
+\author{Agni Datta\inst{1} \and Matteo Campanelli\inst{2} \and Yash Kartik\inst{1}}
+\institute{SECURE -- Center of Excellence in Cyber Security, VIT Bhopal University
+	\email{agnidatta.org@gmail.com}
+	\and
+	Matter Labs
+	\email{matteo.campanelli@gmail.com}}
+\date{}
+
+\maketitle
+
+\tableofcontents
+
+\section{Introduction}
+\subsection{Formal Definitions}
+\subsection{Historical Context}
+\subsection{Importance in Modern Cryptography}
+\subsubsection{Privacy-Preserving Protocols}
+\subsubsection{Blockchain and Distributed Systems}
+\subsubsection{Zero-Knowledge Proofs and Verifiable Computation}
+\subsection{Motivation for the SoK}
+
+\section{Foundations and Preliminaries}
+
+\subsection{Mathematical Foundations}
+
+\subsubsection{Group Theory and Algebraic Structures}
+
+\begin{definition}[Group]
+	A \textit{group} $(G, \cdot)$ is a set $G$ equipped with a binary operation $\cdot : G \times G \to G$ satisfying the following axioms:
+	\begin{enumerate}
+		\item \textbf{Closure:} For all $a, b \in G$, the result of the operation $a \cdot b \in G$.
+		\item \textbf{Associativity:} For all $a, b, c \in G$, $(a \cdot b) \cdot c = a \cdot (b \cdot c)$.
+		\item \textbf{Identity element:} There exists an element $e \in G$ such that for all $a \in G$, $a \cdot e = e \cdot a = a$.
+		\item \textbf{Inverse element:} For each $a \in G$, there exists an element $a^{-1} \in G$ such that $a \cdot a^{-1} = a^{-1} \cdot a = e$.
+	\end{enumerate}
+\end{definition}
+
+\begin{definition}[Abelian Group]
+	An \textit{abelian group} is a group $(G, \cdot)$ in which the binary operation is commutative, i.e., $a \cdot b = b \cdot a$ for all $a, b \in G$.
+\end{definition}
+
+\begin{definition}[Ring]
+	A \textit{ring} $(R, +, \cdot)$ is a set $R$ equipped with two binary operations $+$ and $\cdot$ satisfying the following properties: $(R, +)$ is an abelian group, and $(R, \cdot)$ is a monoid. Additionally, the operations $+$ and $\cdot$ are connected by the distributive laws: for all $a, b, c \in R$, $a \cdot (b + c) = (a \cdot b) + (a \cdot c)$ and $(a + b) \cdot c = (a \cdot c) + (b \cdot c)$.
+\end{definition}
+
+\begin{definition}[Field]
+	A \textit{field} $(F, +, \cdot)$ is a ring $(F, +, \cdot)$ in which every non-zero element has a multiplicative inverse, i.e., for each $a \in F \setminus \{0\}$, there exists an element $a^{-1} \in F$ such that $a \cdot a^{-1} = a^{-1} \cdot a = 1$, where $1$ denotes the multiplicative identity.
+\end{definition}
+
+\subsubsection{Elliptic Curve Cryptography}
+
+Elliptic Curve Cryptography (ECC) is a public-key cryptography approach based on the algebraic structure of elliptic curves over finite fields. The use of elliptic curves for cryptography was independently proposed by Neal Koblitz~\cite{Koblitz1987} and Victor Miller~\cite{C:Miller85} in 1985.
+
+ECC started gaining widespread adoption after 2005 due to several advantages over traditional public-key cryptography like RSA~\cite{RivShaAdl78}. The main advantage of ECC is that it can achieve the same level of security as RSA but with shorter key sizes, resulting in faster computations and reduced resource requirements~\cite{AC:Kaliski98}. This makes ECC particularly well-suited for constrained devices like mobile phones and IoT sensors.
+
+Elliptic curves also form the basis of the Lenstra Integer Factorization Algorithm, an important algorithm for breaking RSA encryption~\cite{}. Historically, the study of elliptic functions and curves was pioneered by mathematicians like Niels Henrik Abel and Karl Weierstrass in the 19th century~\cite{}.
+
+In 2013, the U.S. government recommended the use of ECC over RSA for governmental institutions, further driving its adoption~\cite{}. Today, ECC is widely used in various applications like secure communications, digital signatures, and key exchange protocols~\cite{}. Its efficient and scalable nature makes it a promising candidate to replace traditional public-key cryptography in the future.
+
+\begin{definition}[Elliptical Curve]
+	An \textit{elliptic curve} $E$ over a field $K$ is defined by an equation of the form $y^2 = x^3 + ax + b$, where $a, b \in K$ and the discriminant $\Delta = -16(4a^3 + 27b^2) \neq 0$ to ensure that the curve has no singularities. The set of $K$-rational points on $E$, denoted $E(K)$, consists of the solutions $(x, y) \in K \times K$ to the equation, together with a point at infinity $\mathcal{O}$ that serves as the identity element for a group operation defined on the curve. The group law on $E(K)$ is given by a chord-tangent process: for any two points $P, Q \in E(K)$, their sum $P + Q$ is defined geometrically by the third intersection of the line through $P$ and $Q$ (or the tangent line at $P$ if $P = Q$) with the curve, reflected across the $x$-axis. The inverse of a point $P = (x, y)$ is $-P = (x, -y)$.
+\end{definition}
+
+\subsubsection{Bilinear Pairings}
+
+\begin{definition}[Bilinear Pairings]
+	Let $G_1$ and $G_2$ be cyclic groups of prime order $p$, and let $G_T$ be another cyclic group of order $p$. A \textit{bilinear pairing} is a map $e: G_1 \times G_2 \to G_T$ satisfying the following properties:
+	\begin{enumerate}
+		\item \textbf{Bilinearity:} For all $u, v \in G_1$ and $w \in G_2$, $e(u \cdot v, w) = e(u, w) \cdot e(v, w)$ and for all $u \in G_1$ and $v, w \in G_2$, $e(u, v \cdot w) = e(u, v) \cdot e(u, w)$.
+		\item \textbf{Non-degeneracy:} There exist elements $g_1 \in G_1$ and $g_2 \in G_2$ such that $e(g_1, g_2) \neq 1_{G_T}$, where $1_{G_T}$ is the identity element in $G_T$.
+		\item \textbf{Computability:} There exists an efficient algorithm to compute $e(u, v)$ for all $u \in G_1$ and $v \in G_2$.
+	\end{enumerate}
+			
+\end{definition}
+
+\subsection{Cryptographic Primitives}
+
+\subsubsection{One-Way Functions and Trapdoor Permutations}
+
+Refer \cite{Levin2003}.
+
+\begin{definition}[One-Way Function]
+	Let $f: \{0,1\}^* \to \{0,1\}^*$ be a function. $f$ is called a \textit{one-way function} if:
+	\begin{enumerate}
+		\item \textbf{Computational Efficiency:} $f$ is computable in polynomial time.
+		\item \textbf{Ease of Computation:} For every probabilistic polynomial-time algorithm $A$, there exists a negligible function $\epsilon(\cdot)$ such that for all sufficiently large $n$,
+		      \[
+		      	\Pr[A(f(x)) \in f^{-1}(f(x))] \leq \epsilon(n)
+		      \]
+		      where $x$ is chosen uniformly at random from $\{0,1\}^n$, $f^{-1}(f(x))$ denotes the preimage of $f(x)$ under $f$, and the probability is taken over the random choice of $x$ and the internal coin flips of $A$.
+	\end{enumerate}
+\end{definition}
+
+\begin{definition}[Trapdoor Function]
+	Let $f: \{0,1\}^* \to \{0,1\}^*$ be a function, and let $\mathcal{K}$ denote a set of keys. $f$ is called a \textit{trapdoor function} if:
+	\begin{enumerate}
+		\item \textbf{Efficient Computation:} $f$ is computable in polynomial time.
+		\item \textbf{Trapdoor Knowledge:} There exists a probabilistic polynomial-time algorithm $\mathsf{KeyGen}$ that outputs a key pair $(pk, sk) \in \mathcal{K} \times \mathcal{K}$ such that:
+		      \begin{itemize}
+		      	\item $pk$ is the public key used for the function $f$.
+		      	\item $sk$ is the secret key that allows efficient computation of the inverse of $f$.
+		      \end{itemize}
+		\item \textbf{Ease of Computation:} For every probabilistic polynomial-time algorithm $A$, there exists a negligible function $\epsilon(\cdot)$ such that for all sufficiently large $n$,
+		      \[
+		      	\Pr[A(f(pk, x)) \in f^{-1}(f(pk, x))] \leq \epsilon(n)
+		      \]
+		      where $x$ is chosen uniformly at random from $\{0,1\}^n$, $f(pk, x)$ denotes the application of $f$ with the public key $pk$, $f^{-1}(y)$ denotes the preimage of $y$ under $f$ using the secret key $sk$, and the probability is taken over the random choice of $x$ and the internal coin flips of $A$.
+	\end{enumerate}
+\end{definition}
+
+\begin{definition}[Trapdoor Permutation]
+	Let $\pi: \{0,1\}^* \to \{0,1\}^*$ be a permutation. $\pi$ is called a \textit{trapdoor permutation} if:
+	\begin{enumerate}
+		\item \textbf{Efficient Computation:} Both $\pi$ and $\pi^{-1}$ (the inverse permutation) are computable in polynomial time.
+		\item \textbf{Trapdoor Knowledge:} There exists a probabilistic polynomial-time algorithm $\mathsf{KeyGen}$ that outputs a key pair $(pk, sk)$ such that:
+		      \begin{itemize}
+		      	\item $pk$ is the public key used for permutation $\pi$.
+		      	\item $sk$ is the secret key that allows efficient computation of the inverse permutation $\pi^{-1}$.
+		      \end{itemize}
+		\item \textbf{Ease of Computation:} For every probabilistic polynomial-time algorithm $A$, there exists a negligible function $\epsilon(\cdot)$ such that for all sufficiently large $n$,
+		      \[
+		      	\Pr[\pi(pk, x) = y \wedge A(y) = \pi^{-1}(y)] \leq \epsilon(n)
+		      \]
+		      where $x$ is chosen uniformly at random from $\{0,1\}^n$, $\pi(pk, x)$ denotes the application of permutation $\pi$ with the public key $pk$, $y$ is the resulting permutation output, and $\pi^{-1}(y)$ denotes the application of the inverse permutation $\pi^{-1}$ with the secret key $sk$. The probability is taken over the random choice of $x$, the internal coin flips of $A$, and the randomness used in $\mathsf{KeyGen}$.
+	\end{enumerate}
+\end{definition}
+
+\subsubsection{Collision-Resistant Hash Functions}
+
+\begin{definition}[Cryptographic Hash Function]
+	A \textit{cryptographic hash function} $H: \{0, 1\}^* \to \{0, 1\}^n$ is a deterministic function that maps an arbitrary-length input to a fixed-length output, denoted as a hash value. The security of a cryptographic hash function is characterized by the following properties:
+	\begin{enumerate}
+		\item \textbf{Preimage resistance:} For any given hash value $y \in \{0, 1\}^n$, it is computationally infeasible to find any input $x \in \{0, 1\}^*$ such that $H(x) = y$. Formally, for any probabilistic polynomial-time (PPT) adversary $A$ and any polynomial $p(\cdot)$, there exists a negligible function $\epsilon(\cdot)$ such that:
+		      \[
+		      	\Pr[A(y) = x \text{ such that } H(x) = y] \leq \epsilon(n)
+		      \]
+		      where the probability is taken over the choice of $y$ and the internal randomness of $A$.
+		\item \textbf{Second preimage resistance:} Given an input $x \in \{0, 1\}^*$, it is computationally infeasible to find another input $x' \neq x$ such that $H(x) = H(x')$. Formally, for any PPT adversary $A$ and any polynomial $p(\cdot)$, there exists a negligible function $\epsilon(\cdot)$ such that:
+		      \[
+		      	\Pr[A(x) = x' \text{ such that } x' \neq x \text{ and } H(x) = H(x')] \leq \epsilon(n)
+		      \]
+		      where the probability is taken over the choice of $x$ and the internal randomness of $A$.
+		\item \textbf{Collision resistance:} It is computationally infeasible to find any two distinct inputs $x, x' \in \{0, 1\}^*$ such that $H(x) = H(x')$. Formally, for any PPT adversary $A$ and any polynomial $p(\cdot)$, there exists a negligible function $\epsilon(\cdot)$ such that:
+		      \[
+		      	\Pr[A(\cdot) = (x, x') \text{ such that } x \neq x \text{ and } H(x) = H(x')] \leq \epsilon(n)
+		      \]
+		      where the probability is taken over the internal randomness of $A$.
+		\item \textbf{Avalanche effect:} For any input $x \in \{0, 1\}^*$ and its slightly altered version $x'$, denoted as $x' = x \oplus e_i$ where $e_i$ is a unit vector with a single bit flip at position $i$, the Hamming distance between $H(x)$ and $H(x')$, denoted as $d_H(H(x), H(x'))$, should be close to $n/2$ with high probability. Formally, for any $x \in \{0, 1\}^*$ and any $i$, there exists a negligible function $\epsilon(\cdot)$ such that:
+		      \[
+		      	\Pr\left[d_H(H(x), H(x \oplus e_i)) \approx \frac{n}{2}\right] \geq 1 - \epsilon(n)
+		      \]
+		\item \textbf{Determinism:} For any input $x \in \{0, 1\}^*$, the output hash value $H(x)$ is always the same. Formally, for any $x \in \{0, 1\}^*$ and for any two evaluations of the hash function $H$, $H(x) = H(x)$ holds.
+		\item \textbf{Computational efficiency:} There exists an algorithm $\mathcal{A}$ such that for any input $x$ of length $|x|$, $\mathcal{A}$ computes $H(x)$ in time polynomial in $|x|$.
+	\end{enumerate}
+\end{definition}
+
+\begin{definition}[Collision-Resistant Hash Functions]
+	A \textit{collision-resistant hash function} (CRHF) is a function $H: \{0, 1\}^* \to \{0, 1\}^n$ that is easy to compute: there exists a polynomial-time algorithm that, given $x \in \{0, 1\}^*$, outputs $H(x)$; and hard to find collisions: for any probabilistic polynomial-time algorithm $A$, any polynomial $p(\cdot)$, and sufficiently large $n$, the probability that $A$ outputs distinct inputs $x, x' \in \{0, 1\}^*$ such that $H(x) = H(x')$ is negligible in $n$.
+\end{definition}
+
+\subsubsection{Merkle Trees and Hash-Based Data Structures}
+
+\begin{definition}[Merkle Tree]
+	A \textit{Merkle tree} is a binary tree in which each leaf node contains the hash of a data block, and each internal node contains the hash of the concatenation of its two child nodes. Given a set of data blocks $\{d_i\}_{i=1}^n$, the Merkle tree is constructed as follows: Compute the hash $h_i = H(d_i)$ for each data block $d_i$. Pair the hash values and compute the hash of their concatenation to form the next level of nodes. Repeat this process until a single hash, the root of the tree, is obtained. A \textit{Merkle proof} for a data block $d_i$ is a sequence of hash values that can be used to reconstruct the path from the leaf node $h_i$ to the root of the tree, allowing one to verify the integrity and inclusion of $d_i$ in the tree.
+\end{definition}
+
+\subsection{Random Oracle Model}
+
+The ROM was introduced by Bellare and Rogaway in their paper ``Random Oracles are Practical: A Paradigm for Designing Efficient Protocols'' (1993)~\cite{CCS:BelRog93}. The Random Oracle Model (ROM) is a theoretical model used to analyze the security of cryptographic protocols. In this model, a \textit{random oracle} $\mathcal{O}$ is an idealized black-box function that maps each input to a uniformly random output. 
+
+\begin{definition}[Random Oracle Model]
+    The random oracle $\mathcal{O}: \{0,1\}^* \to \{0,1\}^n$ satisfies the following properties:
+    \begin{enumerate}
+        \item \textbf{Uniformity:} For every input $x \in \{0,1\}^*$, the output $\mathcal{O}(x)$ is chosen uniformly at random from $\{0,1\}^n$.
+        \item \textbf{Consistency:} For any two identical inputs $x$, $\mathcal{O}(x)$ produces the same output.
+        \item \textbf{Independence:} The outputs for distinct inputs are independent of each other.
+    \end{enumerate}
+\end{definition}
+
+Cryptographic protocols studied in the ROM assume access to the random oracle and use it as a subroutine. The security proofs in the ROM show that if an adversary can break the protocol in the real world, then it can also break the protocol in the ideal world where the random oracle behaves as described above.
+
+\subsection{Computational Assumptions}
+
+A computational assumption is a hypothesis regarding the difficulty of solving a specific computational problem within polynomial time. Examples include the hardness of factoring large composite integers, the discrete logarithm problem in cyclic groups, and the computational Diffie-Hellman problem~\cite{DifHel76}.
+
+\begin{definition}[Decisional Diffie-Hellman Trapdoor]
+	The Decisional Diffie-Hellman (DDH) trapdoor is a public-key cryptosystem based on the hardness of the DDH problem in certain groups. Given a group $G$ of prime order $p$ and elements $g, g^a, g^b, g^{ab} \in G$, the DDH assumption states that it is computationally infeasible to distinguish $g^{ab}$ from random elements in $G$, even given $g^a$ and $g^b$.
+\end{definition}
+
+\begin{definition}[Computational Diffie-Hellman Problem]
+	The Computational Diffie-Hellman (CDH) problem is a cryptographic problem that asks to compute $g^{ab}$ given $g, g^a, g^b \in G$ in a group $G$ of prime order $p$. This problem is used as a foundation for constructing trapdoor functions and other cryptographic primitives. Specifically, the CDH problem is defined as follows: given $g, g^a, g^b \in G$, compute $g^{ab}$.
+\end{definition}
+
+\begin{definition}[$k$-Strong Diffie-Hellman Assumption]
+	The $k$-Strong Diffie-Hellman Assumption addresses the $k$-Strong Diffie-Hellman Problem ($k$-SDH), which involves computing a pair $(g^{\frac{1}{(\phi+x)}}, x)$ given $g$ in $\mathcal{G}_1$ and certain elements in $\mathcal{G}_2$, where $\hat{e}: \mathcal{G}_1 \times \mathcal{G}_2 \rightarrow \mathcal{G}_T$ represents a bilinear mapping. This assumption asserts that no probabilistic polynomial-time (PPT) algorithm has a non-negligible probability of solving a random instance of the $k$-Strong Diffie-Hellman Problem.
+\end{definition}
+
+This assumption is used to construct cryptographic primitives with stronger security guarantees.
+
+The Decision Linear (DLIN) assumption in elliptic curve cryptography, proposed by Dan Boneh, Xavier Boyen, and Hovav Shacham, posits the computational hardness of distinguishing between two distributions in a cyclic group \(\mathcal{G}\) of prime order \(p\). In mathematical language, given random generators \(u\), \(v\), and \(h\) of \(\mathcal{G}\), and random elements \(a\) and \(b\) from \(\{1, 2, \ldots, p-1\}\), the distributions \(D_{1}\) and \(D_{2}\) are defined as follows: \(D_{1} = (u, v, h, u^{a}, v^{b}, h^{a+b})\) and \(D_{2} = (u, v, h, u^{a}, v^{b}, \eta)\), where \(\eta\) is a uniformly random element of \(\mathcal{G}\). The DLIN assumption asserts that distinguishing between \(h^{a+b}\) and \(\eta\) is computationally infeasible.
+
+Intuitively, in a group \(G\) of prime order \(p\), with \(u, v, h\) as random generators and \(a, b\) as random exponents, the DLIN assumption states that it is computationally hard to differentiate \(h^{a+b}\) from a uniformly random element \(\eta \in G\).
+
+\begin{definition}[Decision Linear Assumption]
+	let $D_1 = (u, v, h, u^a, v^b, h^{a+b})$ and $D_2 = (u, v, h, u^a, v^b, \eta)$ where $\eta$ is a uniformly random element in $G$. The DLIN assumption states that the distributions $D_1$ and $D_2$ are computationally indistinguishable.
+\end{definition}
+
+The DLIN assumption is useful in settings where the decisional Diffie-Hellman assumption does not hold, such as in pairing-based cryptography. It has found applications in constructing short group signatures, attribute-based encryption schemes, and non-interactive zero-knowledge proofs.
+
+\begin{definition}[DLP Trapdoor]
+	A DLP trapdoor $(g, g^x)$ in a group of prime order $p$, allows efficient computation of $x$ given $g$ and $g^x$, but is computationally hard to derive $x$ from $g$ and $g^x$ without the trapdoor.
+\end{definition}
+
+\begin{definition}[RSA Trapdoor]
+	An RSA trapdoor $(N, e, d)$ allows efficient computation of $m^d \mod N$ given $(N, e)$, but is computationally hard to derive $d$ from $(N, e)$ without the trapdoor.
+\end{definition}
+
+The Knapsack trapdoor cryptosystem is a public-key cryptosystem based on this problem, which is NP-complete in the general case. The key generator can sample a public key that appears random while retaining a trapdoor that enables efficient decryption.
+
+\begin{definition}[Knapsack Trapdoor]
+	Let $\mathbf{a} = (a_1, a_2, \ldots, a_n)$ be a vector and $s$ a target sum. The subset sum problem asks whether there exists a subset $I \subseteq \{1, 2, \ldots, n\}$ such that $\sum_{i \in I} a_i = s$.
+\end{definition}
+
+\begin{definition}[Quadratic Residues Trapdoor]
+	The Quadratic Residues trapdoor is a public-key cryptosystem based on the hardness of deciding quadratic residuosity modulo a composite number $N = pq$, where $p$ and $q$ are large prime numbers. Given $N$ and $a \in \mathbb{Z}_N^*$, the quadratic residuosity problem asks if $a$ is a quadratic residue modulo $N$, i.e., if there exists an $x \in \mathbb{Z}_N^*$ such that $x^2 \equiv a \pmod{N}$.
+\end{definition}
+
+The Syndrome Decoding trapdoor is a public-key cryptosystem based on the hardness of the syndrome decoding problem in coding theory.
+
+\begin{definition}[Syndrome Decoding Trapdoor]
+	Given a parity-check matrix $H$ and a syndrome $s$, the syndrome decoding problem asks to find a vector $e$ of low weight such that $H e^T = s^T$.
+\end{definition}
+
+\begin{definition}[Hidden Field Equations (HFE) Trapdoors]
+	Hidden Field Equations (HFE) trapdoors are a family of public-key cryptosystems based on multivariate quadratic equations over finite fields. The public key consists of a set of multivariate quadratic polynomials $f_1, f_2, \ldots, f_m$ in variables $x_1, x_2, \ldots, x_n$ over a finite field $\mathbb{F}_q$, while the private key allows efficient solving of systems of such equations. 
+\end{definition}
+
+The security relies on the hardness of solving systems of multivariate quadratic equations, which is an NP-complete problem in the general case.
+
+\begin{definition}[Universal Quadratic Trapdoors]
+	A universal quadratic trapdoor $(N, g, h)$ in a group of quadratic residues modulo $N$, allows efficient computation of $h/g^x \mod N$ given $(N, g, g^x)$, but is computationally hard to determine $x$ without the trapdoor.
+\end{definition}
+
+\subsection{Security Models and Definitions}
+
+\subsubsection{Universal Composability (UC) Framework}
+\begin{definition}
+	In the UC framework, a protocol $\pi$ is said to \textit{UC-realize} an ideal functionality $\mathcal{F}$ if for any adversary $\mathcal{A}$ interacting with $\pi$, there exists a simulator $\mathcal{S}$ interacting with $\mathcal{F}$ such that no environment $\mathcal{Z}$ can distinguish between an execution of $\pi$ with $\mathcal{A}$ and execution of $\mathcal{F}$ with $\mathcal{S}$. This definition ensures that the security of the protocol is preserved even when composed of other arbitrary protocols.
+\end{definition}
+
+\subsubsection{Game-Based Security Definitions}
+
+A \textit{game-based security definition} formalizes the security of a cryptographic scheme by defining a game between an adversary and a challenger. The adversary interacts with the challenger according to specified rules, aiming to achieve a certain goal that would break the security of the scheme. The scheme is deemed secure if any adversary, running in polynomial time, wins the game with only negligible probability. Examples include the indistinguishability game for encryption schemes and the unforgeability game for digital signatures.
+
+\subsubsection{Simulation-Based Security}
+
+\textit{Simulation-based security} ensures that whatever an adversary can achieve by attacking a real protocol, it could also be achieved by interacting with an idealized version of the protocol. Formally, a protocol $\pi$ securely implements an ideal functionality $\mathcal{F}$ if for every adversary $\mathcal{A}$ attacking $\pi$, there exists a simulator $\mathcal{S}$ attacking $\mathcal{F}$ such that no environment $\mathcal{Z}$ can distinguish between an execution of $\pi$ with $\mathcal{A}$ and an execution of $\mathcal{F}$ with $\mathcal{S}$. This definition captures the intuition that the real protocol behaves as if it were the ideal functionality.
+
+\begin{definition}[Game-Based Cryptographic Proofs]
+	A game-based cryptographic proof defines the security of a cryptographic scheme through a game between an adversary $\mathcal{A}$ and a challenger $\mathcal{C}$. The game consists of the following components:
+	\begin{enumerate}
+		\item \textbf{Initialization:} The challenger $\mathcal{C}$ generates the scheme's parameters, which may include keys, public parameters, etc.
+		\item \textbf{Adversary Interaction:} The adversary $\mathcal{A}$ interacts with the challenger $\mathcal{C}$ through a series of queries that the scheme must handle (e.g., encryption, decryption, signing, etc.). The adversary aims to break the scheme by achieving a specific goal defined by the game.
+		\item \textbf{Winning Condition:} The adversary $\mathcal{A}$ wins the game if it achieves the specified goal that would break the scheme's security. The probability of winning the game, $\Pr[\text{Adversary } \mathcal{A} \text{ wins}]$, is analyzed to determine the scheme's security.
+	\end{enumerate}
+	The cryptographic scheme is considered secure if any PPT adversary $\mathcal{A}$ can win the game with only negligible probability. Formally, for any PPT adversary $\mathcal{A}$ and any polynomial $p(\cdot)$, there exists a negligible function $\epsilon(\cdot)$ such that:
+	\[
+		\Pr[\mathcal{A} \text{ wins}] \leq \epsilon(n).
+	\]
+	where the probability is taken over the internal randomness of $\mathcal{A}$ and the challenger $\mathcal{C}$.
+\end{definition}
+
+An example of a game-based proof is the indistinguishability game for encryption schemes, where the adversary $\mathcal{A}$ must distinguish between encryptions of two chosen plaintexts.
+
+\section{Membership Proofs}
+\subsection{Classification and Properties}
+\subsubsection{Short vs. Succinct Proofs}
+\subsubsection{Interactive vs. Non-Interactive Proofs}
+\subsubsection{Zero-Knowledge Properties}
+\subsubsection{Proof Systems}
+\subsection{Constructions and Techniques}
+\subsubsection{Classical Constructions}
+\subsubsection{Pairing-Based Constructions}
+\subsubsection{Lattice-Based Constructions}
+
+\subsubsection{Proofs of Partial Knowledge and Delegation}
+\subsection{Security Properties}
+\subsubsection{Completeness}
+\subsubsection{Soundness}
+\subsubsection{Zero-Knowledge}
+\subsubsection{Proof of Knowledge}
+\subsubsection{Adaptive Security}
+
+\section{Set Membership Proofs}
+\subsection{Introduction to Set Membership Proofs}
+\subsection{Properties and Requirements}
+\subsection{Construction Techniques}
+\subsubsection{Classical Approaches}
+\subsubsection{Pairing-Based Approaches}
+\subsubsection{Lattice-Based Approaches}
+
+\subsection{Applications and Use Cases}
+\subsection{Security Analysis}
+
+\section{Cryptographic Accumulators}
+\subsection{Classification and Properties}
+\subsubsection{Static vs. Dynamic Accumulators}
+\subsubsection{Positive vs. Negative Accumulators}
+\subsubsection{Universal Accumulators}
+\subsubsection{Computational vs. Statistical Accumulators}
+\subsubsection{RSA-Based vs. Bilinear Map-Based Accumulators}
+\subsection{Constructions and Techniques}
+\subsubsection{RSA-Based Accumulators}
+\subsubsection{Bilinear Map-Based Accumulators}
+\subsubsection{Mercurial Commitments and Applications}
+\subsubsection{Authenticated Data Structures}
+\subsubsection{Recent Advancements}
+\subsection{Security Properties}
+\subsubsection{Collision Resistance}
+\subsubsection{Indistinguishability}
+\subsubsection{Strong Accumulator Security}
+\subsubsection{Adaptive Security Notions}
+
+\section{Vector Commitment Schemes}
+Vector commitment schemes allow a user to commit to a vector of values and later open the commitment to specific positions succinctly.
+\subsection{Properties and Requirements}
+\subsubsection{Succinctness}
+\subsubsection{Non-Interactive Openings}
+\subsubsection{Efficient Updates}
+\subsection{Constructions and Techniques}
+\subsubsection{Dynamic Vector Commitments}
+\subsubsection{Universal Vector Commitments}
+\subsubsection{Lattice-Based Vector Commitments}
+\subsubsection{Balance Proofs}
+\subsection{Applications and Use Cases}
+\subsubsection{Verifiable Databases}
+\subsubsection{Stateless Cryptocurrencies}
+\subsubsection{Privacy-Preserving Protocols}
+\subsection{Security Analysis}
+\subsubsection{Asymptotic Optimality}
+\subsubsection{Trade-offs in Proof Size and Update Time}
+
+\section{Functional Commitment Schemes}
+\subsection{Foundations and Definitions}
+\subsubsection{Comparison with Vector Commitments}
+\subsubsection{Security Properties (Binding and Hiding)}
+
+\subsection{Types of Functional Commitments}
+\subsubsection{Linear Function Commitments}
+\subsubsection{Polynomial Commitments}
+\subsubsection{Inner Product Arguments}
+\subsubsection{Commitments to Multivariate Polynomials}
+
+\subsection{Advanced Constructions}
+\subsubsection{Lattice-Based Functional Commitments}
+\subsubsection{Pairing-Based Constructions}
+\subsubsection{Transparent Functional Commitments}
+\subsubsection{Homomorphic Functional Commitments}
+
+\subsection{Optimizations and Efficiency Improvements}
+\subsubsection{Batch Opening Techniques}
+\subsubsection{Sublinear-Size Proofs}
+\subsubsection{Amortized Efficiency in Multiple Evaluations}
+
+\subsection{Applications in Cryptography and Blockchain}
+\subsubsection{Zero-Knowledge Proofs and SNARKs}
+\subsubsection{Verifiable Computation}
+\subsubsection{Privacy-Preserving Smart Contracts}
+\subsubsection{Decentralized Storage Proofs}
+
+\subsection{Recent Advancements and Open Problems}
+\subsubsection{Post-Quantum Secure Constructions}
+\subsubsection{Multi-Party Functional Commitments}
+\subsubsection{Functional Commitments for General Circuits}
+\subsubsection{Integration with Other Cryptographic Primitives}
+
+\subsection{Standardization Efforts and Real-World Deployments}
+\subsubsection{Ongoing Standardization Processes}
+\subsubsection{Implementation in Major Blockchain Platforms}
+\subsubsection{Use Cases in Privacy-Enhancing Technologies}
+
+\section{Comparative Analysis}
+\subsection{Theoretical Comparison}
+\subsubsection{Asymptotic Complexity Analysis}
+\subsubsection{Security Reductions and Tightness}
+\subsection{Practical Considerations}
+\subsubsection{Implementation Challenges}
+\subsubsection{Performance Benchmarks}
+\subsection{Trade-offs}
+\subsection{Suitability for Specific Application Domains}
+
+\section{Applications and Use Cases}
+\subsection{Identity and Access Management}
+\subsection{Blockchain and Cryptocurrencies}
+\subsection{Privacy-Preserving Protocols}
+\subsection{Verifiable Computation}
+\subsection{Post-Quantum Considerations and Hybrid Schemes}
+
+\section{Implementation and Deployment Challenges}
+\subsection{Software Libraries and Frameworks}
+\subsection{Hardware Acceleration Techniques}
+\subsection{Side-Channel Attack Resistance}
+\subsection{Integration with Existing Cryptographic Infrastructures}
+\subsection{Standardization Efforts and Interoperability}
+
+\section{Open Problems and Future Directions}
+\subsection{Improving Efficiency}
+\subsection{Enhancing Security}
+\subsection{New Functionalities}
+\subsection{Theoretical Advances}
+\subsection{Practical Considerations}
+
+\section{Conclusion}
+
+\pagebreak
+\bibliographystyle{alpha}
+\bibliography{abbrev0.bib, crypto.bib, bibliography.bib}
+
+\end{document}
