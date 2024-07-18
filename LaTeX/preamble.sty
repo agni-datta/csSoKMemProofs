@@ -1,0 +1,221 @@
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% preamble.sty
+% Author: Agni Datta
+% Date: 2024-07-17
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+
+\def\fileversion{ver. 1}
+\def\filedate{2024-07-17}
+\def\fileauthor{Agni Datta}
+
+\NeedsTeXFormat{LaTeX2e}
+\typeout{Daily Usage Preamble as a Package \fileversion by \fileauthor\space}
+\ProvidesPackage{preamble}[\filedate]
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Packages for spacing and language settings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[onehalfspacing]{setspace} % Set line spacing to one and a half
+\usepackage[british]{babel} % Use British English hyphenation patterns
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Packages for graphics and colours
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{graphicx} % Enhanced support for graphics
+\usepackage{graphics} % Standard graphics inclusion
+\usepackage[x11names]{xcolor} % Support for more color names
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Package for creating framed environments
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[
+	skipabove=10pt,   % Set the vertical skip distance above the framed environment to 10pt
+	skipbelow=10pt,   % Set the vertical skip distance below the framed environment to 10pt
+	framemethod=Tikz  % Use TikZ for drawing frames
+]{mdframed} % Create framed environments
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Package for PDF settings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[2.0, compress]{bxpdfver} % Set PDF version and enable compression
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Package for nicely typeset tabular material
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{booktabs} % Enhances the quality of tables
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Miscellaneous utility packages
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{verbatim} % For verbatim text
+\usepackage{xspace} % Adds space after a command if necessary
+\usepackage{siunitx} % Provides correct spacing for units
+\usepackage{fancyvrb} % Sophisticated verbatim text
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Packages for cryptographic and complexity notations
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[sanserif, full, small]{complexity} % Computational complexity theory macros
+\usepackage[%
+	n,             % Disable notations
+	operators,     % Enable operators
+	advantage,     % Enable advantage
+	sets,          % Enable sets
+	adversary,     % Enable adversary
+	landau,        % Enable Landau notation
+	probability,   % Enable probability
+	notions,       % Enable notions
+	logic,         % Enable logic
+	ff,            % Enable finite fields
+	mm,            % Enable modular arithmetic
+	primitives,    % Enable primitives
+	events,        % Enable events
+	complexity,    % Enable complexity classes
+	asymptotics,   % Enable asymptotics
+	keys           % Enable keys
+]{cryptocode} % Macros for cryptography
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Package for list settings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{enumitem} % Control layout of itemize, enumerate, and description
+\setlist{noitemsep} % Remove extra space between list items
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Package for todo notes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{todonotes} % Use the todo-notes package for adding todo notes in the document
+\setlength{\marginparwidth}{2cm} % Set the width of the margin notes
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Custom commands for todo notes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\newcommand{\adnote}[1]{%
+	\smallskip
+	\todo[inline, size=\small, bordercolor=Firebrick1!60, color=Firebrick1!60]{#1\hfill$\sim$Agni}
+	\smallskip
+}
+
+\newcommand{\mcnote}[1]{%
+	\smallskip
+	\todo[inline, size=\small, bordercolor=Blue1!60, color=Blue1!60]{#1\hfill$\sim$Matteo}
+	\smallskip
+}
+
+\newcommand{\yknote}[1]{%
+	\smallskip
+	\todo[inline, size=\small, bordercolor=RoyalBlue1!60, color=RoyalBlue1!60]{#1\hfill$\sim$Yash}
+	\smallskip
+}
+
+\newcommand{\needcite}{%
+	\todo[noline, size=\small, bordercolor=Firebrick1!60, color=Firebrick1!60]{Requires citation.}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Microtype and quotes
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\PassOptionsToPackage{protrusion=true, expansion=true, babel=true}{microtype} % Improve text appearance
+\PassOptionsToPackage{autostyle=true, csdisplay=true}{csquotes} % Context-sensitive quotation marks
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Fonts
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage[cal=cm, bb=bboldx]{mathalpha} % Customize math fonts
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Hyperref and PDF metadata settings
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\AtEndPreamble{%
+    \usepackage{hyperref} % Enable hyperlinks and set document metadata
+    \PassOptionsToPackage{unicode=true, pdfusetitle}{hyperref}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Cleveref for enhanced cross-referencing
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\AtEndPreamble{%
+    \usepackage[capitalise]{cleveref} % Enhance cross-referencing with cleveref
+	
+	% Theorems
+	\crefname{theorem}{theorem}{theorems}
+	\Crefname{theorem}{Theorem}{Theorems}
+	
+	% Definitions
+	\crefname{definition}{definition}{definitions}
+	\Crefname{definition}{Definition}{Definitions}
+	
+	% Remarks
+	\crefname{remark}{remark}{remarks}
+	\Crefname{remark}{Remark}{Remarks}
+	
+	% Propositions
+	\crefname{proposition}{proposition}{propositions}
+	\Crefname{proposition}{Proposition}{Propositions}
+	
+	% Examples
+	\crefname{example}{example}{examples}
+	\Crefname{example}{Example}{Examples}
+	
+	% Notes
+	\crefname{note}{note}{notes}
+	\Crefname{note}{Note}{Notes}
+	
+	% Problems
+	\crefname{problem}{problem}{problems}
+	\Crefname{problem}{Problem}{Problems}
+	
+	% Exercises
+	\crefname{exercise}{exercise}{exercises}
+	\Crefname{exercise}{Exercise}{Exercises}
+	
+	% Cases
+	\crefname{case}{case}{cases}
+	\Crefname{case}{Case}{Cases}
+	
+	% Lemmas
+	\crefname{lemma}{lemma}{lemmas}
+	\Crefname{lemma}{Lemma}{Lemmas}
+	
+	% Properties
+	\crefname{property}{property}{properties}
+	\Crefname{property}{Property}{Properties}
+	
+	% Conjectures
+	\crefname{conjecture}{conjecture}{conjectures}
+	\Crefname{conjecture}{Conjecture}{Conjectures}
+	
+	% Questions
+	\crefname{question}{question}{questions}
+	\Crefname{question}{Question}{Questions}
+	
+	% Corollaries
+	\crefname{corollary}{corollary}{corollaries}
+	\Crefname{corollary}{Corollary}{Corollaries}
+	
+	% Claims
+	\crefname{claim}{claim}{claims}
+	\Crefname{claim}{Claim}{Claims}
+}
+
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% Additional custom commands
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+\usepackage{xspace}
+
+\newcommand{\inmathsf}[1]{\ensuremath{\mathsf{#1}}}
+\newcommand{\inmathbf}[1]{\ensuremath{\mathbf{#1}}}
+\newcommand{\inmathcal}[1]{\ensuremath{\mathcal{#1}}}
+\newcommand{\group}{\ensuremath{\mathbb{G}}\xspace}
+\newcommand{\hidgrp}{\group_{?}\xspace}
+\newcommand{\commit}{\pcalgostyle{Com}\xspace}
+\newcommand{\setup}{\pcalgostyle{Setup}\xspace}
+\newcommand{\open}{\pcalgostyle{Open}\xspace}
+\newcommand{\crs}{\pcalgostyle{crs}\xspace}
+\newcommand{\aux}{\pcalgostyle{aux}\xspace}
+\newcommand{\VC}{\pcalgostyle{VC}\xspace}
+\newcommand{\VCs}{\pcalgostyle{VCs}\xspace}
+\newcommand{\vvec}{\inmathbf{v}}
+\renewcommand{\Pr}{\inmathsf{Prob}}
+
+\endinput
