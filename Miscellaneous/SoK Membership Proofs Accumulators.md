@@ -2,7 +2,7 @@
 title: "IACR SoK Paper Outline: Membership Proofs and Accumulators"
 linter-yaml-title-alias: "IACR SoK Paper Outline: Membership Proofs and Accumulators"
 date created: Tuesday, June 25th 2024, 21:40:55
-date modified: Thursday, January 30th 2025, 16:28:08
+date modified: Friday, February 21st 2025, 18:44:47
 aliases: "IACR SoK Paper Outline: Membership Proofs and Accumulators"
 ---
 
